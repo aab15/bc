@@ -1,0 +1,53 @@
+Apex Class
+
+public class AgeCalculator {
+    public Date birthdate { get; set; }
+    public Integer result { get; set; }
+    public Boolean showError { get; set; }
+
+    public AgeCalculator() {
+        showError = false;
+    }
+
+    public void calculateAge() {
+        Date today = Date.today();
+        Integer years = today.year() - birthdate.year();
+        if (birthdate > today) {
+            showError = true;
+            result = null;
+        } else {
+            if (birthdate.month() > today.month() ||
+                (birthdate.month() == today.month() && birthdate.day() > today.day())) {
+                years--;
+            }
+            result = years;
+            showError = false;
+        }
+    }
+}
+
+VFP (Visualforce Page)
+
+<apex:page controller="AgeCalculator" docType="html-5.0">>
+    <apex:form>
+        <apex:pageBlock title="Age Calculator">
+            <apex:pageBlockSection>
+                <apex:pageMessages />
+
+                <label for="birthdate">Birthdate:</label>
+                <apex:input type="date" id="birthdate" value="{!birthdate}" required="true" />
+
+                <apex:commandButton value="Calculate Age" action="{!calculateAge}" rerender="resultPanel" />
+            </apex:pageBlockSection>
+
+            <apex:pageBlockSection title="Result" columns="1" id="resultPanel">
+                <apex:outputPanel rendered="{!showError}">
+                    <p style="color: red;">Invalid birthdate. Please enter a valid birthdate.</p>
+                </apex:outputPanel>
+                <apex:outputPanel rendered="{!NOT(showError)}">
+                    <p>Your age is: {!result}</p>
+                </apex:outputPanel>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>
